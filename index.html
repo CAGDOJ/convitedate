@@ -334,6 +334,8 @@
           <div class="summary-row"><dt><span aria-hidden="true" id="summary-food-icon">🍽️</span><span class="sr-only">Comida</span></dt><dd id="summary-food"></dd></div>
           <div class="summary-row"><dt><span aria-hidden="true" id="summary-activity-icon">✨</span><span class="sr-only">Passeio</span></dt><dd id="summary-activity"></dd></div>
         </dl>
+        <button type="button" class="pill wide" id="whatsapp-button">Enviar resposta no WhatsApp 💚</button>
+        <p class="description" style="margin-top:16px;font-size:13px">Seu combinado vai abrir no WhatsApp. Toque em Enviar para confirmar comigo. 💙</p>
         <button type="button" class="quiet-button" id="copy-button">Copiar nosso combinado 💌</button>
         <label for="copy-fallback" class="sr-only">Resumo para copiar manualmente</label>
         <textarea class="copy-fallback" id="copy-fallback" readonly hidden></textarea>
@@ -359,7 +361,7 @@
      PERSONALIZE AQUI
      Basta mudar os textos/ícones abaixo e salvar o próprio HTML.
      Sem servidor, rastreamento, login, bibliotecas ou chamadas externas.
-     As respostas ficam na página: "Copiar nosso combinado" permite enviá-las.
+     As respostas ficam na página até o visitante abrir e enviar pelo WhatsApp.
      ================================================================== */
   const CONFIG = {
     titulo: 'Um date comigo? 💙',
@@ -369,6 +371,7 @@
     tituloFinal: 'Tô contigo, gatinha. 💙',
     mensagemFinal: 'Fica pronta que eu vou te buscar 🚙',
     horarioPadrao: '18:00',
+    whatsapp: '5591982116980',
     mensagensDoNao: ['Tem certeza?', 'Pensa bem…', 'Por favor!!', 'Só um datezinho…', 'Vai, diz que sim!'],
     comidas: [
       { id: 'hamburguer', nome: 'Hambúrguer', icone: '🍔' },
@@ -606,6 +609,18 @@
   function summaryText() {
     return `Nosso date está combinado! 💙\n\n🗓️ ${formattedDate()}\n⏰ ${state.time}\n${state.food.icone} ${state.food.nome}\n${state.activity.icone} ${state.activity.nome}\n\n${CONFIG.mensagemFinal}`;
   }
+  // Abre a conversa apenas após o toque; o envio é confirmado no WhatsApp.
+  function whatsappUrl() {
+    const message = `Aceitei o convite para o nosso date! 💙\n\n🗓️ Data: ${formattedDate()}\n⏰ Horário: ${state.time}\n${state.food.icone} Comida: ${state.food.nome}\n${state.activity.icone} Passeio: ${state.activity.nome}\n\nTe vejo lá! 🥰`;
+    return 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(message);
+  }
+  $('whatsapp-button').addEventListener('click', () => {
+    if (!state.date || !state.time || !state.food || !state.activity) {
+      showToast('Escolha a data, o horário, a comida e o passeio primeiro. 💙');
+      return;
+    }
+    window.location.href = whatsappUrl();
+  });
   $('copy-button').addEventListener('click', async () => {
     const text = summaryText();
     try {
